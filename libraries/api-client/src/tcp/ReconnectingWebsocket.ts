@@ -18,13 +18,16 @@
  */
 
 import logdown from 'logdown';
-import RWS, {CloseEvent, ErrorEvent, Event, Options} from 'reconnecting-websocket';
+import {WebSocket} from 'partysocket';
+// import {CloseEvent, ErrorEvent, Event, Options} from 'reconnecting-websocket';
 
 import {LogFactory, TimeUtil} from '@wireapp/commons';
 
 import * as buffer from '../shims/node/buffer';
 import {WebSocketNode} from '../shims/node/websocket';
 import {onBackFromSleep} from '../utils/BackFromSleepHandler';
+
+console.warn('Loaded new changes RCW');
 
 export enum CloseEventCode {
   NORMAL_CLOSURE = 1000,
@@ -46,24 +49,14 @@ export enum PingMessage {
 }
 
 export class ReconnectingWebsocket {
-  private static readonly RECONNECTING_OPTIONS: Options = {
-    WebSocket: WebSocketNode,
-    connectionTimeout: TimeUtil.TimeInMillis.SECOND * 4,
-    debug: false,
-    maxReconnectionDelay: TimeUtil.TimeInMillis.SECOND * 10,
-    maxRetries: Infinity,
-    minReconnectionDelay: TimeUtil.TimeInMillis.SECOND * 4,
-    reconnectionDelayGrowFactor: 1.3,
-  };
-
   private readonly logger: logdown.Logger;
-  private socket?: RWS;
+  private socket?: WebSocket;
   private pingerId?: NodeJS.Timeout;
   private readonly PING_INTERVAL = TimeUtil.TimeInMillis.SECOND * 20;
   private hasUnansweredPing: boolean;
   private onOpen?: (event: Event) => void;
   private onMessage?: (data: string) => void;
-  private onError?: (error: ErrorEvent) => void;
+  // private onError?: (error: ErrorEvent) => void;
   private onClose?: (event: CloseEvent) => void;
   /**
    * Cleanup function returned by onBackFromSleep to stop the sleep detection interval.
@@ -110,12 +103,12 @@ export class ReconnectingWebsocket {
     });
   }
 
-  private readonly internalOnError = (error: ErrorEvent) => {
-    this.logger.warn('WebSocket connection error', error);
-    if (this.onError) {
-      this.onError(error);
-    }
-  };
+  // private readonly internalOnError = (error: ErrorEvent) => {
+  //   this.logger.warn('WebSocket connection error', error);
+  //   if (this.onError) {
+  //     this.onError(error);
+  //   }
+  // };
 
   private readonly internalOnMessage = (event: MessageEvent) => {
     this.logger.debug('Incoming message');
@@ -196,7 +189,7 @@ export class ReconnectingWebsocket {
   public connect(): void {
     this.socket = this.getReconnectingWebsocket();
     this.socket.onmessage = this.internalOnMessage;
-    this.socket.onerror = this.internalOnError;
+    // this.socket.onerror = this.internalOnError;
     this.socket.onopen = this.internalOnOpen;
     this.socket.onclose = this.internalOnClose;
   }
@@ -280,8 +273,16 @@ export class ReconnectingWebsocket {
     this.stopBackFromSleepHandler?.();
   }
 
-  private getReconnectingWebsocket(): RWS {
-    return new RWS(this.internalOnReconnect, undefined, ReconnectingWebsocket.RECONNECTING_OPTIONS);
+  private getReconnectingWebsocket(): WebSocket {
+    return new WebSocket(this.internalOnReconnect, undefined, {
+      WebSocket: WebSocketNode,
+      connectionTimeout: TimeUtil.TimeInMillis.SECOND * 4,
+      debug: false,
+      maxReconnectionDelay: TimeUtil.TimeInMillis.SECOND * 10,
+      maxRetries: Infinity,
+      minReconnectionDelay: TimeUtil.TimeInMillis.SECOND * 4,
+      reconnectionDelayGrowFactor: 1.3,
+    });
   }
 
   private resolvePendingHealthChecks(isHealthy: boolean) {
@@ -298,7 +299,8 @@ export class ReconnectingWebsocket {
   }
 
   public setOnError(onError: (error: ErrorEvent) => void): void {
-    this.onError = onError;
+    //this.onError = onError;
+    console.warn(onError);
   }
 
   public setOnClose(onClose: (event: CloseEvent) => void): void {

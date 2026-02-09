@@ -224,7 +224,7 @@ export class EventRepository {
 
     window.addEventListener('online', () => {
       this.logger.info('Internet connection regained. Re-establishing WebSocket connection...');
-      connect();
+      // connect();
     });
 
     window.addEventListener('offline', () => {
