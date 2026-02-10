@@ -19,7 +19,6 @@
 
 import logdown from 'logdown';
 import {WebSocket} from 'partysocket';
-// import {CloseEvent, ErrorEvent, Event, Options} from 'reconnecting-websocket';
 
 import {LogFactory, TimeUtil} from '@wireapp/commons';
 
@@ -56,7 +55,7 @@ export class ReconnectingWebsocket {
   private hasUnansweredPing: boolean;
   private onOpen?: (event: Event) => void;
   private onMessage?: (data: string) => void;
-  // private onError?: (error: ErrorEvent) => void;
+  private onError?: (error: Event) => void;
   private onClose?: (event: CloseEvent) => void;
   /**
    * Cleanup function returned by onBackFromSleep to stop the sleep detection interval.
@@ -103,12 +102,12 @@ export class ReconnectingWebsocket {
     });
   }
 
-  // private readonly internalOnError = (error: ErrorEvent) => {
-  //   this.logger.warn('WebSocket connection error', error);
-  //   if (this.onError) {
-  //     this.onError(error);
-  //   }
-  // };
+  private readonly internalOnError = (error: Event) => {
+    this.logger.warn('WebSocket connection error', error);
+    if (this.onError) {
+      this.onError(error);
+    }
+  };
 
   private readonly internalOnMessage = (event: MessageEvent) => {
     this.logger.debug('Incoming message');
@@ -144,6 +143,7 @@ export class ReconnectingWebsocket {
     if (this.isPingingEnabled) {
       this.startPinging();
     }
+    console.warn('____Calling onReconnect to get new WebSocket URL');
     return this.onReconnect();
   };
 
@@ -189,7 +189,7 @@ export class ReconnectingWebsocket {
   public connect(): void {
     this.socket = this.getReconnectingWebsocket();
     this.socket.onmessage = this.internalOnMessage;
-    // this.socket.onerror = this.internalOnError;
+    this.socket.onerror = this.internalOnError;
     this.socket.onopen = this.internalOnOpen;
     this.socket.onclose = this.internalOnClose;
   }
@@ -298,8 +298,8 @@ export class ReconnectingWebsocket {
     this.onMessage = onMessage;
   }
 
-  public setOnError(onError: (error: ErrorEvent) => void): void {
-    //this.onError = onError;
+  public setOnError(onError: (error: Event) => void): void {
+    this.onError = onError;
     console.warn(onError);
   }
 

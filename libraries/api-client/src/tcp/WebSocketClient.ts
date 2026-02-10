@@ -115,7 +115,7 @@ export class WebSocketClient extends EventEmitter {
     }
   };
 
-  private readonly onError = async (error: ErrorEvent) => {
+  private readonly onError = async (error: Event) => {
     this.onStateChange(this.socket.getState());
     this.emit(WebSocketClient.TOPIC.ON_ERROR, error);
     await this.refreshAccessToken();
