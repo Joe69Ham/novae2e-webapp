@@ -126,15 +126,11 @@ test.describe('Mention', () => {
 
     await userAPages.conversation().sendMessageWithUserMention(userB.fullName, 'Hello');
 
-    // Verify on user A's side
-    const messageOnUserA = userAPages.conversation().getMessage({content: 'Hello'});
-    await expect(messageOnUserA).toBeVisible();
-    await expect(messageOnUserA.getByRole('button', {name: `@${userB.fullName}`})).toBeVisible();
-
-    // Verify on user B's side
-    const messageOnUserB = userBPages.conversation().getMessage({content: 'Hello', sender: userA});
-    await expect(messageOnUserB).toBeVisible();
-    await expect(messageOnUserB.getByRole('button', {name: `@${userB.fullName}`})).toBeVisible();
+    for (const page of [userAPages, userBPages]) {
+      const message = page.conversation().getMessage({content: 'Hello', sender: userA});
+      await expect(message).toBeVisible();
+      await expect(message.getByRole('button', {name: `@${userB.fullName}`})).toBeVisible();
+    }
   });
 
   test('I want to send an ephemeral message with a mention', {tag: ['@TC-3491', '@regression']}, async () => {});

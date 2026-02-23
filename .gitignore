@@ -14,6 +14,8 @@ CHANGELOG.md
 node_modules
 npm-debug.log
 yarn-error.log
+Gemini.md
+.geminiignore
 
 # auto generated source files
 /src/script/components/Icon.tsx
@@ -35,6 +37,8 @@ yalc.lock
 /blob-report/
 /playwright/.cache/
 /test/e2e_tests/.env
+.playwright-cli/
+.playwright/
 
 # Nx
 .nx/
