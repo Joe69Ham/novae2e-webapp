@@ -54,6 +54,6 @@ export const generateWireEmail = (lastName: string): string => {
 };
 
 export const generateUsername = (firstName: string, lastName: string): string => {
-  const username = `${sanitizeName(firstName)}${sanitizeName(lastName)}`.toLowerCase();
+  const username = `${sanitizeName(firstName)}${sanitizeName(lastName)}${faker.string.numeric(4)}`.toLowerCase();
   return username.slice(0, 20);
 };
