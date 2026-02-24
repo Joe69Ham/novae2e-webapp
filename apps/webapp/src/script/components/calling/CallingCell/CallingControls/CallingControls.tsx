@@ -176,8 +176,8 @@ export const CallingControls = ({
               className="call-ui__button call-ui__button--red call-ui__button--large"
               onClick={() => (isIncoming ? callActions.reject(call) : callActions.leave(call))}
               onBlur={() => clearShowAlert()}
-              title={!isGroup && showAlert ? call1To1StartedAlert : t('videoCallOverlayHangUp')}
-              aria-label={!isGroup && showAlert ? call1To1StartedAlert : t('videoCallOverlayHangUp')}
+              title={t('videoCallOverlayHangUp')}
+              aria-label={t('videoCallOverlayHangUp')}
               type="button"
               data-uie-name="do-call-controls-call-decline"
             >
