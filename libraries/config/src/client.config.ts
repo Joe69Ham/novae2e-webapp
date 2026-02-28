@@ -17,15 +17,15 @@
  *
  */
 
-import {ConfigGeneratorParams} from './config.types';
-import {Env} from './env';
+import { ConfigGeneratorParams } from './config.types';
+import { Env } from './env';
 
 export function generateConfig(params: ConfigGeneratorParams, env: Env) {
-  const {urls, version, env: nodeEnv} = params;
+  const { urls, version, env: nodeEnv } = params;
   return {
     APP_BASE: urls.base ?? '',
     ANALYTICS_API_KEY: env.ANALYTICS_API_KEY,
-    APP_NAME: env.APP_NAME ?? 'Wire',
+    APP_NAME: env.APP_NAME ?? 'NovaE²E',
     BACKEND_NAME: env.BACKEND_NAME,
     BACKEND_REST: urls.api ?? '',
     BACKEND_WS: urls.ws ?? '',

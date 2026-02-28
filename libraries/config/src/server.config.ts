@@ -21,8 +21,8 @@ import fs from 'fs-extra';
 import logdown from 'logdown';
 import path from 'path';
 
-import {ConfigGeneratorParams} from './config.types';
-import {Env} from './env';
+import { ConfigGeneratorParams } from './config.types';
+import { Env } from './env';
 
 const ROBOTS_DIR = path.join(__dirname, 'robots');
 const ROBOTS_ALLOW_FILE = path.join(ROBOTS_DIR, 'robots.txt');
@@ -52,7 +52,7 @@ const logger = logdown('config', {
 
 function readFile(filePath: string, fallback: string = ''): string {
   try {
-    return fs.readFileSync(filePath, {encoding: 'utf8', flag: 'r'});
+    return fs.readFileSync(filePath, { encoding: 'utf8', flag: 'r' });
   } catch (error) {
     logger.warn(`Cannot access "${filePath}": ${(error as Error).message}`);
     return fallback;
@@ -80,7 +80,7 @@ function resolveServerCertificatePath(certificateFileName: string): string {
   return path.resolve(process.cwd(), `apps/server/dist/certificate/${certificateFileName}`);
 }
 
-function mergedCSP({urls}: ConfigGeneratorParams, env: Env): Record<string, Iterable<string>> {
+function mergedCSP({ urls }: ConfigGeneratorParams, env: Env): Record<string, Iterable<string>> {
   const objectSrc = parseCommaSeparatedList(env.CSP_EXTRA_OBJECT_SRC);
   const csp = {
     connectSrc: [
@@ -104,11 +104,11 @@ function mergedCSP({urls}: ConfigGeneratorParams, env: Env): Record<string, Iter
   };
   return Object.entries(csp)
     .filter(([key, value]) => !!Array.from(value).length)
-    .reduce((accumulator, [key, value]) => ({...accumulator, [key]: value}), {});
+    .reduce((accumulator, [key, value]) => ({ ...accumulator, [key]: value }), {});
 }
 
 export function generateConfig(params: ConfigGeneratorParams, env: Env) {
-  const {commit, version, urls, env: nodeEnv} = params;
+  const { commit, version, urls, env: nodeEnv } = params;
   const baseUrl = urls.base ?? '';
   const apiUrl = urls.api ?? '';
   const websocketUrl = urls.ws ?? '';
@@ -143,7 +143,7 @@ export function generateConfig(params: ConfigGeneratorParams, env: Env) {
     MINIMUM_REQUIRED_CLIENT_BUILD_DATE: env.MINIMUM_REQUIRED_CLIENT_BUILD_DATE,
     ROBOTS: {
       ALLOW: readFile(ROBOTS_ALLOW_FILE, 'User-agent: *\r\nDisallow: /'),
-      ALLOWED_HOSTS: ['app.wire.com'],
+      ALLOWED_HOSTS: ['e2e.novaos.cloud'],
       DISALLOW: readFile(ROBOTS_DISALLOW_FILE, 'User-agent: *\r\nDisallow: /'),
     },
     SSL_CERTIFICATE_KEY_PATH: sslCertificateKeyPath,

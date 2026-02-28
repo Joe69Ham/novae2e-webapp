@@ -123,7 +123,7 @@ const OAuthPermissionsComponent = ({
         const team = await getTeam(selfTeamId);
         const teamIcon = new AssetRemoteData({assetKey: team.icon, assetDomain: selfUser.qualified_id?.domain});
         if (teamIcon.identifier === 'default') {
-          setTeamImage(`${Config.getConfig().APP_BASE}/image/logo/wire-logo-120.png`);
+          setTeamImage(`${Config.getConfig().APP_BASE}/image/logo/novae2e-logo-120.png`);
         } else {
           const teamImageBlob = await assetRepository.load(teamIcon);
           setTeamImage(teamImageBlob && (await loadDataUrl(teamImageBlob)));
