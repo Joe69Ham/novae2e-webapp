@@ -17,11 +17,11 @@
  *
  */
 
-import express, {Router} from 'express';
+import express, { Router } from 'express';
 import expressSitemapXml from 'express-sitemap-xml';
 import hbs from 'hbs';
 import helmet from 'helmet';
-import {StatusCodes as HTTP_STATUS} from 'http-status-codes';
+import { StatusCodes as HTTP_STATUS } from 'http-status-codes';
 import nocache from 'nocache';
 
 import fs from 'fs';
@@ -29,19 +29,19 @@ import http from 'http';
 import https from 'https';
 import path from 'path';
 
-import type {ClientConfig, ServerConfig} from '@wireapp/config';
+import type { ClientConfig, ServerConfig } from '@wireapp/config';
 
-import {HealthCheckRoute} from './routes/_health/HealthRoute';
-import {AppleAssociationRoute} from './routes/appleassociation/AppleAssociationRoute';
-import {parseMinimumRequiredClientBuildDate} from './routes/client-version-check/ClientBuildDate';
-import {parseClientVersion} from './routes/client-version-check/ClientVersion';
-import {createClientVersionCheckRoute} from './routes/client-version-check/ClientVersionCheckRoute';
-import {ConfigRoute} from './routes/config/ConfigRoute';
-import {InternalErrorRoute, NotFoundRoute} from './routes/error/ErrorRoutes';
-import {GoogleWebmasterRoute} from './routes/googlewebmaster/GoogleWebmasterRoute';
-import {RedirectRoutes} from './routes/RedirectRoutes';
-import {Root} from './routes/Root';
-import {replaceHostnameInObject} from './util/hostnameReplacer';
+import { HealthCheckRoute } from './routes/_health/HealthRoute';
+import { AppleAssociationRoute } from './routes/appleassociation/AppleAssociationRoute';
+import { parseMinimumRequiredClientBuildDate } from './routes/client-version-check/ClientBuildDate';
+import { parseClientVersion } from './routes/client-version-check/ClientVersion';
+import { createClientVersionCheckRoute } from './routes/client-version-check/ClientVersionCheckRoute';
+import { ConfigRoute } from './routes/config/ConfigRoute';
+import { InternalErrorRoute, NotFoundRoute } from './routes/error/ErrorRoutes';
+import { GoogleWebmasterRoute } from './routes/googlewebmaster/GoogleWebmasterRoute';
+import { RedirectRoutes } from './routes/RedirectRoutes';
+import { Root } from './routes/Root';
+import { replaceHostnameInObject } from './util/hostnameReplacer';
 
 class Server {
   private readonly app: express.Express;
@@ -143,8 +143,8 @@ class Server {
     this.app.use(
       helmet({
         crossOriginEmbedderPolicy: false,
-        crossOriginOpenerPolicy: false,
-        frameguard: {action: 'deny'},
+        crossOriginOpenerPolicy: { policy: 'same-origin' },
+        frameguard: { action: 'deny' },
       }),
     );
     this.app.use(helmet.noSniff());
@@ -174,6 +174,12 @@ class Server {
     // https://github.com/helmetjs/helmet/issues/230
     this.app.use((_req, res, next) => {
       res.setHeader('X-XSS-Protection', '1; mode=block');
+      // Permissions-Policy: restrict powerful APIs to same-origin only
+      res.setHeader(
+        'Permissions-Policy',
+        'camera=(self), microphone=(self), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()',
+      );
+      res.setHeader('X-Permitted-Cross-Domain-Policies', 'none');
       next();
     });
   }
@@ -275,4 +281,4 @@ class Server {
   }
 }
 
-export {Server};
+export { Server };

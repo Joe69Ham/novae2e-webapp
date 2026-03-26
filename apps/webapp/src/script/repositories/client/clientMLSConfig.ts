@@ -17,22 +17,31 @@
  *
  */
 
-import {FeatureList} from '@wireapp/api-client/lib/team';
+import { FeatureList } from '@wireapp/api-client/lib/team';
 
-import {Config} from '../../Config';
-import {getE2EIConfig} from '../../page/components/FeatureConfigChange/FeatureConfigChangeHandler/Features/E2EIdentity';
-import {getMLSConfig} from '../../page/components/FeatureConfigChange/FeatureConfigChangeHandler/Features/MLS';
+import { Config } from '../../Config';
+import { getE2EIConfig } from '../../page/components/FeatureConfigChange/FeatureConfigChangeHandler/Features/E2EIdentity';
+import { getMLSConfig } from '../../page/components/FeatureConfigChange/FeatureConfigChangeHandler/Features/MLS';
+
+// Post-Quantum hybrid ciphersuite: X25519 + Kyber768 (NIST ML-KEM)
+const PQ_HYBRID_CIPHERSUITE = 61489; // MLS_128_X25519KYBER768DRAFT00_AES128GCM_SHA256_Ed25519
 
 export function getClientMLSConfig(teamFeatures: FeatureList) {
   const keyingMaterialUpdateThreshold = Config.getConfig().FEATURE.MLS_CONFIG_KEYING_MATERIAL_UPDATE_THRESHOLD;
   const mlsConfig = getMLSConfig(teamFeatures);
   const willEnrollE2ei = getE2EIConfig(teamFeatures) !== undefined;
-  return mlsConfig
-    ? {
-        keyingMaterialUpdateThreshold,
-        defaultCiphersuite: mlsConfig.config.defaultCipherSuite,
-        ciphersuites: mlsConfig.config.allowedCipherSuites,
-        skipInitIdentity: !!willEnrollE2ei,
-      }
-    : undefined;
+  if (!mlsConfig) return undefined;
+
+  // Ensure Post-Quantum hybrid ciphersuite is always in the supported list
+  const ciphersuites = [...mlsConfig.config.allowedCipherSuites];
+  if (!ciphersuites.includes(PQ_HYBRID_CIPHERSUITE as any)) {
+    ciphersuites.push(PQ_HYBRID_CIPHERSUITE as any);
+  }
+
+  return {
+    keyingMaterialUpdateThreshold,
+    defaultCiphersuite: mlsConfig.config.defaultCipherSuite,
+    ciphersuites,
+    skipInitIdentity: !!willEnrollE2ei,
+  };
 }
