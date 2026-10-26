@@ -36,3 +36,29 @@ The webapp depends on this library for all backend communication. When making ch
 - Run tests: `nx run core-lib:test`
 - Build the library: `nx run core-lib:build`
 - Check for circular dependencies: `nx run core-lib:check:circular-dependencies`
+
+# NovaE²E (our fork) – commands and notes
+
+Moved here on 26.10.2026 from `/opt/CLAUDE.md`, so it only loads when working in this repo.
+
+```bash
+yarn install                              # Install (Yarn 4.12+, Node 24.10+)
+yarn start                                # Dev server (nx serve server)
+yarn dev                                  # Dev with library watching
+yarn build:prod                           # Production build
+yarn bundle:prod                          # Bundle webapp
+yarn test                                 # All tests (nx run-many -t test)
+yarn lint / yarn lint:fix                 # ESLint
+yarn e2e-test / yarn e2e-ui               # Playwright E2E tests
+yarn type-check                           # TypeScript check (nx run-many -t type-check)
+nx run core-lib:test                      # Test core library only
+nx run core-lib:check:circular-dependencies
+```
+
+Always run tasks via `nx` (or `yarn` scripts that call nx), not underlying tooling directly.
+
+- `apps/webapp/`: React + TypeScript frontend (Emotion CSS-in-JS, i18next, Service Worker).
+- `apps/server/`: Node.js backend API (Protobuf protocol, REST).
+- `libraries/core/`: `@wireapp/core`, Wire protocol, WebSocket, MLS plus post-quantum Kyber768. Handles all cryptographic operations, account auth and real-time communication.
+- `libraries/config/`: shared configuration.
+- Default nx project: `webapp`.
